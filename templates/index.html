@@ -1,0 +1,247 @@
+<!--
+	Copyright (C) 2026  https://github.com/apadartha-code
+	
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+	
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+	
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <https://gnu.org>.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main Application Dashboard Platform</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        .status { margin-top: 15px; font-weight: bold; padding: 10px; border-radius: 6px; display: none; font-size: 13px; }
+        .status-success { background: rgba(21, 87, 36, 0.2); color: #4ade80; border: 1px solid rgba(74, 222, 128, 0.4); }
+        .status-error { background: rgba(114, 28, 36, 0.2); color: #f87171; border: 1px solid rgba(248, 113, 113, 0.4); }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans flex flex-col justify-between">
+
+    <header class="max-w-4xl w-full mx-auto px-4 pt-6 flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-800 pb-6 gap-4">
+        <div>
+            <h1 class="text-2xl font-extrabold tracking-tight text-white">Application Command Center</h1>
+            <p class="text-slate-400 text-xs mt-0.5">Secure Core Integration Dashboard Matrix</p>
+        </div>
+    </header>
+
+    <main class="flex-grow flex flex-col items-center justify-center p-4 gap-6 w-full max-w-4xl mx-auto">
+        
+        <!-- Moved Verify Server Identity Div -->
+        <div id="verify-server-div" class="max-w-xs w-full bg-slate-800/60 border border-slate-700/80 rounded-xl p-4 shadow-lg backdrop-blur-sm">
+            <h2 class="text-sm font-bold text-white tracking-wide uppercase">Verify Server Identity</h2>
+            <p class="text-slate-400 text-xs mt-1 mb-3">Issue a cryptographic challenge to this local instance.</p>
+
+            <div style="margin-bottom: 0.75rem;">
+                <label for="server-verify-password" style="display: block; color: #cbd5e1; font-size: 0.75rem; margin-bottom: 0.25rem; font-weight: normal;">Master Password</label>
+                <input type="password" id="server-verify-password" placeholder="Enter client-side password" style="width: 100%; padding: 0.4rem 0.6rem; font-size: 0.8rem; background-color: #0f172a; border: 1px solid #475569; color: #ffffff; border-radius: 6px; box-sizing: border-box;">
+            </div>
+
+            <button id="verifyBtn" onclick="verifyServer()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs py-2 px-3 rounded-lg cursor-pointer transition-colors">
+                Verify Server
+            </button>
+            <div id="statusBox" class="status"></div>
+        </div>
+
+        <!-- Hidden Resource Access Div containing access-iframe -->
+        <div id="resource-access" style="display: none;" class="w-full">
+            <iframe id="access-iframe" src="" class="w-full h-[400px] border border-slate-700/80 bg-slate-950/40 rounded-xl shadow-inner backdrop-blur-sm"></iframe>
+        </div>
+
+        <!-- Hidden Keymaker Div containing keymaker-frame -->
+        <div id="keymaker-div" style="display: none;" class="text-center space-y-4 w-full flex flex-col items-center">
+            <p class="text-slate-400 text-sm max-w-sm">To calculate system image vector tokens, pipeline your layout matrix straight inside the Keymaker module workspace loop.</p>
+            
+            <button onclick="launchKeymaker(this)" class="inline-block bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-sm py-3 px-6 rounded-xl shadow-lg transition-transform active:scale-95 cursor-pointer">
+                Launch Keymaker Workflow →
+            </button>
+            
+            <iframe id="keymaker-frame" src="" style="display: none;" class="w-full h-[400px] border border-slate-700/80 bg-slate-950/40 rounded-xl mt-4 shadow-inner backdrop-blur-sm"></iframe>
+        </div>
+        
+    </main>
+
+    <footer class="text-center py-4 text-slate-500 text-[11px] border-t border-slate-800 max-w-4xl w-full mx-auto">
+        Platform Core Instance Registry • Production Target Engine v2026
+    </footer>
+
+    <script>
+        async function launchKeymaker(button) {
+            // 1. Prepare your WebCrypto Key and customization rules first
+            const iframe = document.getElementById('keymaker-frame');
+            const customRules = { version: "v2" };
+            const scriptPath = "/static/js/transcoder.js";
+        
+            // 2. CRITICAL: Attach the 'load' listener BEFORE changing the src
+            iframe.addEventListener('load', () => {
+              iframe.contentWindow.postMessage({
+                type: 'SETUP_TRANSCODER',
+                scriptPath: scriptPath,
+                cryptoKey: window.appSecureKey,
+                rules: customRules
+              }, '*');
+            });
+        
+            // 3. Trigger the page load and display configurations
+            iframe.src = "/keymaker/ui?callback=/keymaker_done&session_id={{ app_session_id }}";
+            iframe.style.display = "block";
+            button.style.display = "none";
+        }
+    
+        // Launch Access Workflow Function (Clone of launchKeymaker for access-iframe)
+        async function launchAccess() {
+            const iframe = document.getElementById('access-iframe');
+            const customRules = { version: "v2" };
+            const scriptPath = "/static/js/transcoder.js";
+    
+            // Attach listener prior to altering the src URL
+            iframe.addEventListener('load', () => {
+                iframe.contentWindow.postMessage({
+                    type: 'SETUP_TRANSCODER',
+                    scriptPath: scriptPath,
+                    cryptoKey: window.appSecureKey,
+                    rules: customRules
+                }, '*');
+            });
+    
+            // Set the frame source and display the section
+            iframe.src = "/access";
+            document.getElementById("resource-access").style.display = "block";
+        }
+
+        /* CLIENT SIDE CRYPTOGRAPHIC SIGNATURE ALGORITHMS */
+        const strToBuf = str => new TextEncoder().encode(str);
+        
+        async function deriveKeyFromPassword(password, saltBuffer) {
+            const baseKey = await window.crypto.subtle.importKey(
+                "raw", strToBuf(password), { name: "PBKDF2" }, false, ["deriveKey"]
+            );
+            return window.crypto.subtle.deriveKey(
+                { name: "PBKDF2", salt: saltBuffer, iterations: 100000, hash: "SHA-256" },
+                baseKey,
+                { name: "AES-CBC", length: 256 },
+                false,
+                ["decrypt"]
+            );
+        }
+
+        async function setSessionSecret(secretKeyBytes) {
+            return window.crypto.subtle.importKey(
+                "raw",
+                secretKeyBytes,
+                "AES-GCM",
+                false, // <--- CRITICAL: extractable = false
+                ["encrypt", "decrypt"]
+            ).then((secureKeyObject) => {
+                window.appSecureKey = secureKeyObject;
+            });
+        }
+
+        async function verifyServer() {
+            const statusBox = document.getElementById("statusBox");
+            statusBox.style.display = "none";
+            const password = document.getElementById("server-verify-password").value;
+            if (!password) {
+                statusBox.className = "status status-error";
+                statusBox.innerText = `❌ Password cannot be empty.`;
+                statusBox.style.display = "block";
+                return;
+            }
+        
+            try {
+                const salt = window.crypto.getRandomValues(new Uint8Array(16));
+                const saltB64 = btoa(String.fromCharCode(...salt));
+                const response = await fetch("/challenge", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ salt: saltB64 })
+                });
+        
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error || "Server rejected challenge evaluation.");
+        
+                const iv = Uint8Array.from(atob(data.iv), c => c.charCodeAt(0));
+                const ciphertext = Uint8Array.from(atob(data.ciphertext), c => c.charCodeAt(0));
+                const serverId = data.plaintext;
+                const iv2 = Uint8Array.from(atob(data.iv2), c => c.charCodeAt(0));
+                const ciphertext2 = Uint8Array.from(atob(data.ciphertext2), c => c.charCodeAt(0));
+        
+                const aesKey = await deriveKeyFromPassword(password, salt);
+                const decryptedBuffer = await window.crypto.subtle.decrypt(
+                    { name: "AES-CBC", iv: iv }, aesKey, ciphertext
+                );
+        
+                const decryptedText = new TextDecoder().decode(new Uint8Array(decryptedBuffer));
+                if (decryptedText === serverId) {
+                    statusBox.className = "status status-success";
+                    statusBox.innerText = `✅ Success: Genuine Server Verified!`;
+                    //Decrypt the session secret and set it up for use.
+                    sessionSecret = await window.crypto.subtle.decrypt(
+                        { name: "AES-CBC", iv: iv2 }, aesKey, ciphertext2
+                    );
+                    await setSessionSecret(sessionSecret);
+
+                    // Hide verify-server-div and call launchAccess
+                    document.getElementById("verify-server-div").style.display = "none";
+                    launchAccess();
+
+                    /*// Hide verify server div & display resource-access div with /access iframe
+                    document.getElementById("verify-server-div").style.display = "none";
+                    const resourceAccessDiv = document.getElementById("resource-access");
+                    document.getElementById("access-iframe").src = "/access";
+                    resourceAccessDiv.style.display = "block";*/
+                } else { throw new Error("Decrypted string mismatch."); }
+            } catch (err) {
+                statusBox.className = "status status-error";
+                statusBox.innerText = `❌ Verification Failed: ${err.message}`;
+            }
+            statusBox.style.display = "block";
+        }
+
+        window.addEventListener('message', (event) => {
+            // Enforce Same-Origin: Reject messages if the sender domain 
+            // does not exactly match this window's domain.
+            if (event.origin !== window.location.origin) {
+                console.warn('Blocked cross-origin message attempt.');
+                return;
+            }
+    
+            // Handle message from access-iframe to switch active sections
+            if (event.data && event.data.type === 'SHOW_KEYMAKER') {
+                document.getElementById('resource-access').style.display = 'none';
+                document.getElementById('keymaker-div').style.display = 'block';
+                return;
+            }
+    
+            // Handle message from keymaker-iframe to switch active sections
+            if (event.data && event.data.type === 'SHOW_ACCESS') {
+                const iframe = document.getElementById('keymaker-frame');
+                iframe.src = ""
+                iframe.style.display = 'none'
+                document.getElementById('keymaker-div').style.display = 'none';
+                
+                launchAccess();
+                return;
+            }
+
+            if (event.data && event.data.type === 'SESSION_DONE') {
+                console.log('Session done signal received. Redirecting...');
+                
+                // Redirect the main window location to '/'
+                window.location.href = '/';
+            }
+        });
+    </script>
+</body>
+</html>
